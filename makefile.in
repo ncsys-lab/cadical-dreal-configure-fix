@@ -13,6 +13,7 @@ CXXFLAGS=@CXXFLAGS@
 LIBS=@LIBS@
 CONTRIB=@CONTRIB@
 IPASIR=@IPASIR@
+PREFIX=@PREFIX@
 
 ############################################################################
 #    It is usually not necessary to change anything below this line!       #
@@ -100,6 +101,10 @@ clean:
 test: all
 	CADICALBUILD="$(DIR)" $(MAKE) -j1 -C ../test
 
+install: all
+	cp -r ../build "$(PREFIX)/build"
+	cp -r ../src   "$(PREFIX)/src"
+
 #--------------------------------------------------------------------------#
 
-.PHONY: all always analyze clean test update format
+.PHONY: all always analyze clean test update format install

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd "$(dirname $0)" || exit 1
+
 #--------------------------------------------------------------------------#
 
 # Run './configure' to produce a 'makefile' in the 'build' sub-directory or
@@ -32,6 +34,7 @@ quiet=no
 m32=no
 contrib=yes
 ipasir=yes
+prefix="../"
 
 #--------------------------------------------------------------------------#
 
@@ -144,6 +147,8 @@ do
 
     -h|--help) usage;;
 
+    --prefix=*) prefix="$1";;  # no-op
+
     -a|--all) all=yes;;
 
     -g|--debug) debug=yes;;
@@ -188,6 +193,7 @@ do
 done
 
 #--------------------------------------------------------------------------#
+prefix="${prefix#"--prefix="}"
 
 if [ $quiet = yes ]
 then
@@ -506,6 +512,7 @@ sed \
 -e "s#@CONTRIB@#$contrib#" \
 -e "s#@IPASIR@#$ipasir#" \
 -e "s#@ROOT@#$root#" \
+-e "s#@PREFIX@#$prefix#" \
 ../makefile.in > makefile
 
 msg "generated '$build/makefile' from '../makefile.in'"
@@ -540,7 +547,9 @@ update:
 	\$(MAKE) -C "\$(CADICALBUILD)" update
 format:
 	\$(MAKE) -C "\$(CADICALBUILD)" format
-.PHONY: all cadical clean mobical test format
+install:
+	\$(MAKE) -C "\$(CADICALBUILD)" install
+.PHONY: all cadical clean mobical test format install
 EOF
 
 msg "generated '../makefile' as proxy to ..."
@@ -548,14 +557,14 @@ msg "... '$build/makefile'"
 
 #--------------------------------------------------------------------------#
 
-if [ -f $src/makefile ]
+if [ -f "$src/makefile" ]
 then
   msg "removing '$src/makefile'"
   rm -f $src/makefile
 fi
 
 msg "linking '$root/makefile'"
-ln -s $root/makefile $src/makefile
+ln -s "$root/makefile" "$src/makefile"
 
 #--------------------------------------------------------------------------#
 
